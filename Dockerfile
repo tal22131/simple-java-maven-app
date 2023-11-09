@@ -1,12 +1,13 @@
 # Build stage
 FROM maven:3.8.6-openjdk-11-slim AS build
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
+WORKDIR /app
+COPY ./src /app
+COPY pom.xml /app
 RUN mvn package
 
 # Production stage
-FROM openjdk:11-jre-slim AS production
+FROM adoptopenjdk:11-jre-hotspot
 WORKDIR /app
-COPY --from=build /app/target/*.jar ./app.jar
-CMD ["java", "-jar", "app.jar"]
+COPY --from=build /app/target/*.jar /app/my-app.jar
+CMD ["java", "-jar", "my-app.jar"]
+
