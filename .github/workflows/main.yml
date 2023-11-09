@@ -37,7 +37,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ vars.DOCKER_USER }}/jarimage:${{ env.NEW_VERSION }} .
+        docker build -t ${{ vars.DOCKER_USER }}/jarimage:${{ env.NEW_VERSION }} -t ${{ vars.DOCKER_USER }}/jarimage:latest .
 
     - name: Login to Docker Hub
       uses: docker/login-action@v1
@@ -46,7 +46,7 @@ jobs:
         password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
             
     - name: Push to DockerHub
-      run: docker push  ${{ vars.DOCKER_USER }}/jarimage:${{ env.NEW_VERSION }}
+      run: docker push ${{ vars.DOCKER_USER }}/jarimage:${{ env.NEW_VERSION }} ${{ vars.DOCKER_USER }}/jarimage:latest
 
     - name: Update version
       run: |
@@ -56,7 +56,6 @@ jobs:
 
         echo "The new version is ${{ env.NEW_VERSION }}"
         
-        # Update the version.txt in the repo
         echo "${{ env.NEW_VERSION }}" > .VERSION
         git add .VERSION
         git commit -m "Update .VERSION"
