@@ -35,3 +35,12 @@ jobs:
       run: |
         docker build -t my-image:${{ github.sha }} .
         docker build --target build -t my-image:test-${{ github.sha }} .
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ vars.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+            
+    - name: Push to DockerHub
+      run: docker push ${{ vars.DOCKER_USER }}/${{ vars.DOCKER_CLIENT_REPO }}
