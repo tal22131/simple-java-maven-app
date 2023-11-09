@@ -31,7 +31,7 @@ jobs:
 
     - name: Increase patch version
       run: |
-        base_version=$(cat version.txt)
+        base_version=$(cat .VERSION)
         NEW_VERSION=$(echo $base_version | awk -F. '{$NF = $NF + 1} 1' | sed 's/ /./g')
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
