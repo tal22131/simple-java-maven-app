@@ -22,9 +22,16 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Maven Release
-      uses: qcastel/github-actions-maven-release@master
-      with:
-        release-bot-name: 'release-bot'
-        release-bot-email: 'release-bot@example.com'
-        gpg-enabled: false
+    - name: Build Maven project
+      run: mvn package
+
+    - name: Increase patch version
+      run: |
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        NEW_VERSION=$(echo $VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+        mvn versions:set -DnewVersion=$NEW_VERSION
+
+    - name: Build Docker image
+      run: |
+        docker build -t my-image:${{ github.sha }} .
+        docker build --target build -t my-image:test-${{ github.sha }} .
