@@ -47,3 +47,18 @@ jobs:
             
     - name: Push to DockerHub
       run: docker push  ${{ vars.DOCKER_USER }}/jarimage:${{ env.NEW_VERSION }}
+
+    - name: Update version
+      run: |
+        # Config git identity
+        git config --local user.email "github-actions"
+        git config --local user.name "github-actions"
+
+        echo "The new version is ${{ env.NEW_VERSION }}"
+        
+        # Update the version.txt in the repo
+        echo "${{ env.NEW_VERSION }}" > .VERSION
+        git add .VERSION
+        git commit -m "Update .VERSION"
+        git push
+
