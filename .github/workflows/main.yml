@@ -2,9 +2,13 @@ name: Java CI with Maven
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ "master" ]
+    paths-ignore:
+      - '.VERSION'
+  pull_request:
+      branches: [ "master" ]
+      paths-ignore:
+        - '.VERSION'
 
 
 
@@ -27,9 +31,8 @@ jobs:
 
     - name: Increase patch version
       run: |
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        NEW_VERSION=$(echo $VERSION | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
-        mvn versions:set -DnewVersion=$NEW_VERSION
+        base_version=$(cat version.txt)
+        NEW_VERSION=$(echo $base_version | awk -F. '{$NF = $NF + 1} 1' | sed 's/ /./g')
         echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
     - name: Build Docker image
